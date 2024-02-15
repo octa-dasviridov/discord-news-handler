@@ -4,7 +4,7 @@ import config
 from discord.ext import commands
 
 
-channels_to_resend = ['└📢・выпуски']
+channels_to_resend = ['└📢・выпуски', 'основной']
 keyphrase_to_resend = 'Resend'
 keymode = True
 
@@ -23,15 +23,20 @@ async def on_message(msg):
             images = [discord.Embed().set_image(url=msg.attachments[i].url) for i in range(len(msg.attachments))]
             for member in msg.guild.members:
                 if not member.bot:
+                    now = msg.embeds
                     embed = discord.Embed()
-                    embed.add_field(name=' Новости PlayStrix', value=msg.content)
-                    if len(images) == 1:
-                        embed.set_image(url=msg.attachments[0].url)
-                        await member.send(embed=embed)
+                    if now:
+                        embed.add_field(name=' Новости PlayStrix', value=msg.content)
+                        await member.send(embeds=[embed] + now)
                     else:
-                        await member.send(embeds=[embed] + images)
+                        embed.add_field(name=' Новости PlayStrix', value=msg.content)
+                        if len(images) == 1:
+                            embed.set_image(url=msg.attachments[0].url)
+                            await member.send(embed=embed)
+                        else:
+                            await member.send(embeds=[embed] + images)
     except Exception as e:
-        print(str(e))
+        pass
 
 
 async def runner():
